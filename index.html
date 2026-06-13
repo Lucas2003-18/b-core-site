@@ -55,6 +55,7 @@ tailwind.config = {
 </script>
 <style>
   * { box-sizing: border-box; }
+  html { overflow-x: hidden; }
   body {
     background-color: #0D1117;
     background-image: radial-gradient(rgba(58,74,92,0.5) 1px, transparent 1px);
@@ -136,11 +137,30 @@ tailwind.config = {
   }
   .nav-link:hover { color:#4DB8B0; border-bottom-color:#2E8B84; }
   .container { max-width:1280px; margin:0 auto; padding:0 80px; }
+  .nav-desktop { display:flex; gap:32px; }
+  .nav-toggle {
+    display:none; background:transparent; border:1px solid #2A3040; border-radius:6px;
+    color:#E8EDF2; cursor:pointer; padding:8px; align-items:center; justify-content:center;
+  }
+  .nav-toggle:hover { border-color:#3A4A5C; }
+  .mobile-menu {
+    display:none; flex-direction:column; gap:4px;
+    position:fixed; top:80px; left:0; right:0;
+    background:#0D1117; border-bottom:1px solid #2A3040;
+    padding:16px 20px; z-index:49;
+  }
+  .mobile-menu.open { display:flex; }
+  .mobile-menu .nav-link { display:block; padding:14px 4px; }
+  .mobile-menu .btn-primary { margin-top:8px; justify-content:center; }
   @media (max-width:768px) {
     .container { padding:0 20px; }
-    .hero-grid  { grid-template-columns:1fr !important; }
+    .hero-grid  { grid-template-columns:minmax(0,1fr) !important; }
     .three-col  { grid-template-columns:1fr !important; }
     .form-row   { grid-template-columns:1fr !important; }
+    .nav-desktop, .nav-cta-desktop { display:none; }
+    .nav-toggle { display:flex; }
+    .hero-grid h1 { font-size:36px !important; }
+    .terminal-wrap > div:last-child { padding:16px !important; font-size:11px !important; }
   }
 </style>
 </head>
@@ -150,19 +170,33 @@ tailwind.config = {
 <header style="position:fixed;top:0;left:0;right:0;z-index:50;background:#0D1117;border-bottom:1px solid #2A3040;height:80px;">
   <div class="container" style="height:100%;display:flex;align-items:center;justify-content:space-between;">
     <div style="display:flex;align-items:center;gap:12px;">
+      <img src="logo-icon.png" alt="B-Core Labs" style="height:44px;width:auto;">
       <span style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#E8EDF2;letter-spacing:-0.01em;">B-Core Labs</span>
     </div>
-    <nav style="display:flex;gap:32px;">
+    <nav class="nav-desktop">
       <a class="nav-link" href="#produtos">Produtos</a>
       <a class="nav-link" href="#como-funciona">Como Funciona</a>
       <a class="nav-link" href="#sobre">Sobre</a>
       <a class="nav-link" href="#contato">Contato</a>
     </nav>
+    <a class="btn-primary nav-cta-desktop" href="#contato" style="text-decoration:none;">
+      Falar com especialista
+      <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menu" aria-expanded="false">
+      <span class="material-symbols-outlined" id="nav-toggle-icon">menu</span>
+    </button>
+  </div>
+  <nav class="mobile-menu" id="mobile-menu">
+    <a class="nav-link" href="#produtos">Produtos</a>
+    <a class="nav-link" href="#como-funciona">Como Funciona</a>
+    <a class="nav-link" href="#sobre">Sobre</a>
+    <a class="nav-link" href="#contato">Contato</a>
     <a class="btn-primary" href="#contato" style="text-decoration:none;">
       Falar com especialista
       <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
     </a>
-  </div>
+  </nav>
 </header>
 
 <!-- HERO -->
@@ -388,6 +422,20 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     if (t) { e.preventDefault(); t.scrollIntoView({ behavior:'smooth', block:'start' }); }
   });
 });
+
+const navToggle = document.getElementById('nav-toggle');
+const navToggleIcon = document.getElementById('nav-toggle-icon');
+const mobileMenu = document.getElementById('mobile-menu');
+navToggle.addEventListener('click', () => {
+  const isOpen = mobileMenu.classList.toggle('open');
+  navToggle.setAttribute('aria-expanded', isOpen);
+  navToggleIcon.textContent = isOpen ? 'close' : 'menu';
+});
+mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  mobileMenu.classList.remove('open');
+  navToggle.setAttribute('aria-expanded', 'false');
+  navToggleIcon.textContent = 'menu';
+}));
 
 document.getElementById('btn-submit').addEventListener('click', function() {
   const nome    = document.getElementById('f-nome').value;
