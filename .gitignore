@@ -1,0 +1,5 @@
+.claude/
+*.png
+!favicon-*.png
+!apple-touch-icon.png
+!og-image.png
